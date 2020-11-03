@@ -1,7 +1,7 @@
 import concurrent.futures
 import numpy as np
 
-from image import read_image, crop_image, count_hit
+from image import read_image, crop_image, count_hit_fast
 from time_tracker import simple_time_tracker
 
 
@@ -10,10 +10,9 @@ def count_image_pixels_over_threshold(im, threshold=250):
     """计算大于某个色差值的所有像素比
     """
     pixels = im.width * im.height
-    matrix = np.asarray(im)
     hit = 0
 
-    ml = len(matrix)
+    ml = im.height
     part_list = [
         [0, ml // 4],
         [ml // 4, ml // 2],
@@ -23,7 +22,7 @@ def count_image_pixels_over_threshold(im, threshold=250):
 
     with concurrent.futures.ProcessPoolExecutor() as executor:
         results = [executor.submit(
-            count_hit, matrix[part[0]:part[1]], threshold) for part in part_list]
+            count_hit_fast, im, (im.width, part[1]), threshold) for part in part_list]
 
         for rc in concurrent.futures.as_completed(results):
             part_hits = rc.result()

@@ -2,6 +2,7 @@ import os
 
 from PIL import Image
 
+
 def read_image(img_name):
     """从当前目录读取图片
     """
@@ -23,6 +24,20 @@ def count_hit(matrix, threshold):
             r = pixel[0]
             g = pixel[1]
             b = pixel[2]
+
+            if r >= threshold and g >= threshold and b >= threshold:
+                hit = hit + 1
+
+    return hit
+
+
+def count_hit_fast(im, rangebox, threshold):
+    hit = 0
+    w, h = rangebox
+
+    for row in range(w):
+        for col in range(h):
+            r, g, b = im.getpixel((row, col))
 
             if r >= threshold and g >= threshold and b >= threshold:
                 hit = hit + 1
